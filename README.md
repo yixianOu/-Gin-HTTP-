@@ -10,6 +10,9 @@
 * configs：配置文件。
    * config.yaml:对Server，App，Database的默认配置
 * docs：文档集合。
+   * docs.go:将项目信息和接口路由信息按规范生成到包全局变量 doc 中
+   * swagger.json:默认指向当前应用所启动的域名下的 swagger/doc.json 路径
+   * swagger.yaml:swagger默认配置
 * global：全局变量。
    * setting.go:将配置信息和应用程序关联起来
 * internal：内部模块。
@@ -20,7 +23,11 @@
       * tag.go:标签结构体；handle方法
       * article.go:文章结构体；handle方法
    * routers：路由相关逻辑处理。
-      * router.go:注册路由
+      * router.go:注册路由,Logger,Recovery,Swagger
+      * api:封装好的函数
+         * v1
+            * tag.go:标签模块的接口编写
+            * artical.go:文章模块的接口编写
    * service：项目核心业务逻辑。
  * pkg：项目相关的模块包。
     * errcode:错误码标准化
@@ -39,5 +46,5 @@
        * app.go:响应处理
  * storage：项目生成的临时文件。
  * scripts：各类构建，安装，分析等操作的脚本。
- * third_party：第三方的资源工具，例如 Swagger UI。
- * main.go:启动文件。init调用初始化配置方法；
+
+ * main.go:启动文件。init调用初始化方法，配置公共组件；
