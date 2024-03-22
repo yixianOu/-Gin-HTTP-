@@ -14,6 +14,7 @@
    * docs.go:将项目信息和接口路由信息按规范生成到包全局变量 doc 中
    * swagger.json:默认指向当前应用所启动的域名下的 swagger/doc.json 路径
    * swagger.yaml:swagger默认配置
+   * sql包：内含blog.sql保存创建数据库表的MySQL语句
 
 * global：全局变量。
    * setting.go:将配置信息和应用程序关联起来
@@ -69,7 +70,7 @@
        * form.go:针对shouldBind方法进行了二次封装，发生错误则使用Translator翻译错误消息体。声明了 ValidError 相关的结构体和方法
 
  * storage：项目生成的临时文件。
-
- * scripts：各类构建，安装，分析等操作的脚本。
+    * logs:内含app.log，记录项目的日志信息
+    * uploads:存储前端上传的图片
 
  * main.go:启动文件。init调用初始化方法，配置公共组件；
