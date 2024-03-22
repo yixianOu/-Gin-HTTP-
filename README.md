@@ -3,7 +3,7 @@
 是学习Gin的练手项目，会在源码中作大量解释代码逻辑的注释，并且在README文件中分析项目的各个模块及其流程
 
 主要是要实现两大块的基础业务功能，功能点分别如下：
- * 标签管理：文章所归属的分类，也就是标签。我们平时都会针对文章的内容打上好几个标签，用于标识文章内容的要点要素，这样子便于读者的识别和 SEO 的收录等。
+ * 标签管理：文章所归属的分类，也就是标签。我们平时都会针对文章的内容打上好几个标签，用于标识文章内容的要点要素，这样子便于读者的识别。
  * 文章管理：整个文章内容的管理，并且需要将文章和标签进行关联。
 
   目录结构：
@@ -18,17 +18,20 @@
 * internal：内部模块。
    * dao：数据访问层（Database Access Object），所有与数据相关的操作都会在 dao 层进行，例如 MySQL、ElasticSearch 等。
    * middleware：HTTP 中间件。
+      * translations.go：用于编写针对 validator 的语言包翻译的相关功能。引入了多语言包locales、通用翻译器universal—translator和validator自带翻译器,通过GetHeader获取语言类型
    * model：模型层，用于存放 model 对象。
       * model.go:公共字段结构体; 借助GORM实现NewDBEngine方法
-      * tag.go:标签结构体；handle方法
-      * article.go:文章结构体；handle方法
+      * tag.go:标签结构体；操作标签模块，是对数据库的增删改查函数的第一层封装，并且只与实体产生关系
+      * article.go:文章结构体；操作文章模块，是对数据库的增删改查函数的第一层封装，并且只与实体产生关系
    * routers：路由相关逻辑处理。
-      * router.go:注册路由,Logger,Recovery,Swagger
-      * api:封装好的函数
-         * v1
+      * router.go:注册路由，apiv1路由组,Swagger；中间件,Logger,Recovery，Translations
+      * api:路由handler
+         * v1：直接调用service中封装好的操作数据库的函数
             * tag.go:标签模块的接口编写
             * artical.go:文章模块的接口编写
    * service：项目核心业务逻辑。
+      * tag.go:针对业务接口中定义的的增删改查和统计行为进行了 Request 结构体编写,应用标签实现参数绑定和参数校验。对数据库的增删改查操作做第三层封装，函数会对入参进行参数校验
+      * article.go:针对业务接口中定义的的增删改查和统计行为进行了 Request 结构体编写,应用标签实现参数绑定和参数校验，对数据库的增删改查操作做第三层封装，函数会对入参进行参数校验
  * pkg：项目相关的模块包。
     * errcode:错误码标准化
        * common_code.go:预定义项目中的一些公共错误码，便于引导和规范大家的使用
@@ -44,6 +47,7 @@
     * app:应用模块
        * pagination.go:分页处理
        * app.go:响应处理
+       * form.go:针对shouldBind方法进行了二次封装，发生错误则使用Translator翻译错误消息体
  * storage：项目生成的临时文件。
  * scripts：各类构建，安装，分析等操作的脚本。
 
