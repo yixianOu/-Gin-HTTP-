@@ -39,7 +39,7 @@
 
    * routers：路由相关逻辑处理。
       * router.go:注册路由，apiv1路由组,Swagger，upload/file,static，auth；使用中间件,Logger,Recovery，Translations，JWT
-      * api:解析唯一入参gin.Contex的各字段、完成入参绑定和判断、根据request的Context字段创建service并调用其方法、序列化结果响应到gin.Contex中，集四大功能板块的逻辑串联；日志、错误处理。
+      * api:解析唯一入参gin.Contex的各字段（如request）、完成入参绑定和判断、根据request的Context字段创建service并调用其方法、序列化结果响应到gin.Contex中，集四大功能板块的逻辑串联；日志、错误处理。
          * v1：直接调用service中封装好的操作数据库的函数和app中的参数校验函数和响应体函数
             * tag.go:标签模块的接口，包含相关路由的handler。借助service包实现
             * artical.go:文章模块的接口，包含相关路由的handler。借助service包实现
@@ -71,9 +71,9 @@
     * convert：类型转换
        * convet.go:为StrTo结构体提供类型转换的方法
 
-    * app:应用模块。组合第三方库提供的 API，向上层提供根据需求进行再封装的函数。
+    * app:应用模块。组合第三方库提供的 API，向MiddleWare或api层提供根据需求进行再封装的函数。
        * pagination.go:分页处理
-       * app.go:响应处理。实现响应结构体及其方法
+       * app.go:响应处理。实现响应结构体（has a gin.Context）及其方法
        * form.go:引入validator库。实现绑定和判断的函数BindAndValid是对shouldBind方法进行的二次封装，发生错误则使用Translator翻译错误消息体。声明了 ValidError 相关的结构体和方法
        * jwt.go：GenerateToken 根据appKey和appSecret生成 JWT Token；ParseToken 解析和校验 Token返回JWT的属性
 
