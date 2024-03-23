@@ -98,7 +98,10 @@
     * logs:内含app.log，记录项目的日志信息
     * uploads:存储前端上传的图片
 
- * main.go:启动文件。init调用初始化方法，配置公共组件；setupFlag设置编译信息，setupSetting调用setting包的ReadSection方法读取yaml中的各部分数据并给对应的全局变量赋值，setupLogger设置日志，setupDBEngine连接数据库，setupValidator设置校验器，setupTracer设置追踪器
+ * main.go:启动文件。
+    * init调用初始化方法，配置公共组件；
+    * setupFlag设置编译信息，setupSetting调用setting包的ReadSection方法读取yaml中的各部分数据并给对应的全局变量赋值，setupLogger设置日志，setupDBEngine连接数据库，setupValidator设置校验器，setupTracer设置追踪器。
+    * 实现优雅重启和停止.
 
 
 
