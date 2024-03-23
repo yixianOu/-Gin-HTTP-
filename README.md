@@ -32,6 +32,9 @@
       * jwt.go:JWT 通过 GetHeader 方法从 gin.Context 中获取 token 参数，然后调用 app.ParseToken 对其进行解析，成功则执行c.Next，失败则根据返回的错误类型进行断言判定，然后响应并执行c.Abort回退。
       * access_log.go：访问日志AccessLogWriter结构体，其方法Write实现了对访问日志和响应体的双写。其方法AccessLog用AccessLogWriter代替gin.Context的Writer，此后对回复体的写入会被记录。还会自动将请求类型，响应状态，处理的开始结束时间记入日志
       * recovery.go:创建Email的饿汉单例模式defaultMailer，在捕获到异常后调用 SendMail 方法进行预警邮件发送
+      * app_info.go：在进程内的Context设置一些内部消息，如应用名称和应用版本号
+      * limiter.go:将app封装的限流器方法与对应的中间件逻辑串联起来，可接受不同的限流器入参，若令牌桶中缺少可发出的令牌，则Abort回退
+      * context_timeout.go：上下文超时时间控制，设置Context.Request的超时属性。处理超时的request会返回err
 
    * model：模型层，用于存放 model 对象。为上层提供直接操作数据库的方法
       * model.go:公共字段结构体; 借助GORM实现NewDBEngine方法；注册回调函数实现公共字段的处理，如新增行为，更新行为，删除行为，都会触发对应的回调函数
@@ -40,7 +43,7 @@
       * auth.go:Auth结构体，其Get方法用于判断能否根据客户端传来的app_key和app_secret，在数据库blog_auth表中查到记录，查到则返回该记录。
 
    * routers：路由相关逻辑处理。
-      * router.go:注册路由，apiv1路由组,Swagger，upload/file,static，auth；使用中间件,Logger,Recovery，Translations，JWT，AccessLog,Recovery
+      * router.go:注册路由，apiv1路由组,Swagger，upload/file,static，auth；使用中间件,Logger,Recovery，Translations，JWT，AccessLog,Recovery，AppInfo，RateLimiter，ContextTimeout
       * api:解析唯一入参gin.Contex的各字段（如request）、完成入参绑定和判断、根据request的Context字段创建service并调用其方法、序列化结果响应到gin.Contex中，集四大功能板块的逻辑串联；日志、错误处理。
          * v1：直接调用service中封装好的操作数据库的函数和app中的参数校验函数和响应体函数
             * tag.go:标签模块的接口，包含相关路由的handler。借助service包实现
@@ -87,6 +90,9 @@
 
     * email：import第三方库Gomail支持使用SMTP服务器发送电子邮件，对发送电子邮件的行为进行封装
        * email.go：定义了SMTPInfo结构体用于传递发送邮箱所必须的信息。Email是对SMTPInfo的封装，其方法SendMail调用NewMessage创建邮件实例并赋值，而后调用NewDialer和DialAndSend创建拨号实例将邮件寄出
+    * limiter:调包Ratelimit 提供了一个简单高效的令牌桶实现，并提供大量方法帮助实现限流器的逻辑。
+       * limiter.go:声明LimiterIface接口定义方法；声明Limiter令牌桶存储令牌与名称的映射关系；声明LimiterBuketRule存储令牌桶的各规则属性
+       * method_limiter.go:针对LimiterIface实现MethodLimiter限流器，其在 Key 方法中根据 RequestURI 切割出核心路由作为键值对名称，并在 GetBucket 和 AddBuckets 进行获取和设置 Bucket 的对应逻辑。为router.go提供了NewMethodLimiter和AddBuckets以初始化中间件函数的入参
 
  * storage：项目生成的临时文件。
     * logs:内含app.log，记录项目的日志信息
