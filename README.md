@@ -31,6 +31,7 @@
       * translations.go：用于编写针对 validator 的语言包翻译的相关功能。借助了多语言包locales、通用翻译器universal—translator和validator自带翻译器,通过GetHeader获取语言类型。
       * jwt.go:JWT 通过 GetHeader 方法从 gin.Context 中获取 token 参数，然后调用 app.ParseToken 对其进行解析，成功则执行c.Next，失败则根据返回的错误类型进行断言判定，然后响应并执行c.Abort回退。
       * access_log.go：访问日志AccessLogWriter结构体，其方法Write实现了对访问日志和响应体的双写。其方法AccessLog用AccessLogWriter代替gin.Context的Writer，此后对回复体的写入会被记录。还会自动将请求类型，响应状态，处理的开始结束时间记入日志
+      * recovery.go:创建Email的饿汉单例模式defaultMailer，在捕获到异常后调用 SendMail 方法进行预警邮件发送
 
    * model：模型层，用于存放 model 对象。为上层提供直接操作数据库的方法
       * model.go:公共字段结构体; 借助GORM实现NewDBEngine方法；注册回调函数实现公共字段的处理，如新增行为，更新行为，删除行为，都会触发对应的回调函数
@@ -39,7 +40,7 @@
       * auth.go:Auth结构体，其Get方法用于判断能否根据客户端传来的app_key和app_secret，在数据库blog_auth表中查到记录，查到则返回该记录。
 
    * routers：路由相关逻辑处理。
-      * router.go:注册路由，apiv1路由组,Swagger，upload/file,static，auth；使用中间件,Logger,Recovery，Translations，JWT
+      * router.go:注册路由，apiv1路由组,Swagger，upload/file,static，auth；使用中间件,Logger,Recovery，Translations，JWT，AccessLog,Recovery
       * api:解析唯一入参gin.Contex的各字段（如request）、完成入参绑定和判断、根据request的Context字段创建service并调用其方法、序列化结果响应到gin.Contex中，集四大功能板块的逻辑串联；日志、错误处理。
          * v1：直接调用service中封装好的操作数据库的函数和app中的参数校验函数和响应体函数
             * tag.go:标签模块的接口，包含相关路由的handler。借助service包实现
@@ -83,6 +84,9 @@
 
     * upload:处理上传操作
        * file.go:实现文件相关参数获取的函数（文件名，文件后缀，保存地址）、检查文件的函数（目标目录是否存在，文件后缀是否匹配，文件大小是否超出，是否允许写入目录）
+
+    * email：import第三方库Gomail支持使用SMTP服务器发送电子邮件，对发送电子邮件的行为进行封装
+       * email.go：定义了SMTPInfo结构体用于传递发送邮箱所必须的信息。Email是对SMTPInfo的封装，其方法SendMail调用NewMessage创建邮件实例并赋值，而后调用NewDialer和DialAndSend创建拨号实例将邮件寄出
 
  * storage：项目生成的临时文件。
     * logs:内含app.log，记录项目的日志信息
