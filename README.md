@@ -30,6 +30,7 @@
    * middleware：HTTP 中间件。
       * translations.go：用于编写针对 validator 的语言包翻译的相关功能。借助了多语言包locales、通用翻译器universal—translator和validator自带翻译器,通过GetHeader获取语言类型。
       * jwt.go:JWT 通过 GetHeader 方法从 gin.Context 中获取 token 参数，然后调用 app.ParseToken 对其进行解析，成功则执行c.Next，失败则根据返回的错误类型进行断言判定，然后响应并执行c.Abort回退。
+      * access_log.go：访问日志AccessLogWriter结构体，其方法Write实现了对访问日志和响应体的双写。其方法AccessLog用AccessLogWriter代替gin.Context的Writer，此后对回复体的写入会被记录。还会自动将请求类型，响应状态，处理的开始结束时间记入日志
 
    * model：模型层，用于存放 model 对象。为上层提供直接操作数据库的方法
       * model.go:公共字段结构体; 借助GORM实现NewDBEngine方法；注册回调函数实现公共字段的处理，如新增行为，更新行为，删除行为，都会触发对应的回调函数
