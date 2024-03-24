@@ -34,7 +34,7 @@
    * middleware：HTTP 中间件。
       * translations.go：用于编写针对 validator 的语言包翻译的相关功能。借助了多语言包locales、通用翻译器universal—translator和validator自带翻译器,通过GetHeader从gin.Context中获取语言类型。
       * jwt.go:JWT 通过 GetHeader 方法从 gin.Context 中获取 token 参数，然后调用 app包的ParseToken 对其进行解析，成功则执行c.Next，失败则根据返回的错误类型进行断言判定，然后响应错误并执行c.Abort回退。
-      * access_log.go：声明访问日志AccessLogWriter结构体，其方法Write实现了对访问日志和响应体的双写。其方法AccessLog用AccessLogWriter代替gin.Context的Writer，此后对回复体的写入操作会被记录，同时会自动将请求类型，响应状态，处理的开始结束时间记入日志
+      * access_log.go：声明访问日志AccessLogWriter结构体，其方法Write实现了对访问日志和响应体的双写、方法AccessLog用AccessLogWriter代替gin.Context的Writer，此后对回复体的写入操作会被记录，同时会自动将请求类型，响应状态，处理的开始结束时间记入日志
       * recovery.go:创建Email的饿汉单例模式defaultMailer，在捕获到异常后调用 SendMail 方法进行预警邮件发送
       * app_info.go：在进程内的Context自动添加一些内部消息，如应用名称和应用版本号
       * limiter.go:将app封装的限流器方法与对应的中间件逻辑串联起来。函数可接受不同的限流器入参，若令牌桶中缺少可发出的令牌，则Abort回退
